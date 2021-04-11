@@ -1,20 +1,19 @@
 using GemmForge.Common;
 using GemmForge.Gpu;
-using GemmForge.Host;
 
 namespace GemmForge
 {
     public class CodeBuilder
     {
-        private readonly IHostCodeGenerator _hostCodeGenerator;
-        private readonly IGPUCodeGenerator _gpuCodeGenerator;
+        private readonly IExpressionResolver _expressionResolver;
         private readonly Code _code;
+        private readonly CppVariableTypeConverter _typeConverter;
 
-        public CodeBuilder(IHostCodeGenerator hostCodeGenerator, IGPUCodeGenerator gpuCodeGenerator, Code code)
+        public CodeBuilder(IGPUCodeGenerator gpuCodeGenerator)
         {
-            _hostCodeGenerator = hostCodeGenerator;
-            _gpuCodeGenerator = gpuCodeGenerator;
-            _code = code;
+            _expressionResolver = new CppExpressionResolver(gpuCodeGenerator);
+            _typeConverter = new CppVariableTypeConverter();
+            _code = new Code();
         }
 
         public Code Build()
@@ -22,17 +21,26 @@ namespace GemmForge
             return _code;
         }
 
-        public CodeBuilder Declare(Variable variable, Assignment init)
+        public CodeBuilder DeclareVariable(Variable variable, Assignment assignment)
         {
-            _hostCodeGenerator.DeclareAndAssign(variable, init);
+            assignment.Resolve(_expressionResolver);            
+            _code.Append($"{_typeConverter.Convert(variable.VariableType)} {variable.VariableName} {_expressionResolver.ExtractResult()}");
             return this;
         }
         
-        public CodeBuilder Declare(Pointer pointer, Assignment init)
+        public CodeBuilder DeclarePointer(Variable pointer, Assignment assignment)
         {
-            _hostCodeGenerator.DeclareAndAssign(pointer, init);
+            assignment.Resolve(_expressionResolver);            
+            _code.Append($"{_typeConverter.Convert(pointer.VariableType)} *{pointer.VariableName} {_expressionResolver.ExtractResult()}");
             return this;
         }
         
+        public CodeBuilder DeclareArray(Variable pointer, Expression assignment)
+        {
+            assignment.Resolve(_expressionResolver);            
+            _code.Append($"{_typeConverter.Convert(pointer.VariableType)} {pointer.VariableName}[{_expressionResolver.ExtractResult()}]");
+            return this;
+        }
+ 
     }
 }

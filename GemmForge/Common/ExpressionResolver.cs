@@ -7,6 +7,6 @@ namespace GemmForge.Common
         void Resolve(Literal literal);
         void Resolve(Assignment assignment);
         void Resolve(MallocShared assignment);
-        
+        string ExtractResult();
     }
 }

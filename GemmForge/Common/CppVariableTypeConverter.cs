@@ -1,7 +1,6 @@
 using System;
-using GemmForge.Common;
 
-namespace GemmForge.Host
+namespace GemmForge.Common
 {
     public class CppVariableTypeConverter
     {

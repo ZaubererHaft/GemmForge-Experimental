@@ -13,7 +13,7 @@ namespace GemmForge
 
         public void Append(string code)
         {
-            _stringBuilder.Append(code);
+            _stringBuilder.Append(code).Append(";\n");
         }
 
         public override string ToString()

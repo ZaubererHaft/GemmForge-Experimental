@@ -46,19 +46,17 @@
         <Compile Include="CodeBuilder.cs" />
         <Compile Include="CodeBuilderFactory.cs" />
         <Compile Include="Common\Assignment.cs" />
+        <Compile Include="Common\CppExpressionResolver.cs" />
+        <Compile Include="Common\CppVariableTypeConverter.cs" />
         <Compile Include="Common\Expression.cs" />
         <Compile Include="Common\ExpressionResolver.cs" />
         <Compile Include="Common\Literal.cs" />
-        <Compile Include="Common\Pointer.cs" />
         <Compile Include="Common\Variable.cs" />
         <Compile Include="Common\VariableType.cs" />
+        <Compile Include="Gpu\CudaCodeGenerator.cs" />
         <Compile Include="Gpu\IGPUCodeGenerator.cs" />
         <Compile Include="Gpu\MallocShared.cs" />
         <Compile Include="Gpu\SyclCodeGenerator.cs" />
-        <Compile Include="Host\CppExpressionResolver.cs" />
-        <Compile Include="Host\CppHostCodeGenerator.cs" />
-        <Compile Include="Host\CppVariableTypeConverter.cs" />
-        <Compile Include="Host\IHostCodeGenerator.cs" />
         <Compile Include="Tests.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

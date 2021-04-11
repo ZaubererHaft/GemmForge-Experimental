@@ -1,5 +1,4 @@
 using GemmForge.Gpu;
-using GemmForge.Host;
 
 namespace GemmForge
 {
@@ -7,10 +6,14 @@ namespace GemmForge
     {
         public CodeBuilder CreateCppSyclCodeBuilder()
         {
-            var code = new Code();
-            var hostGenerator = new CppHostCodeGenerator(code);
-            var gpuGenerator = new SyclCodeGenerator(code);
-            return new CodeBuilder(hostGenerator, gpuGenerator, code);
+            var gpuGenerator = new SyclCodeGenerator();
+            return new CodeBuilder(gpuGenerator);
+        }
+
+        public CodeBuilder CreateCppCUDACodeBuilder()
+        {
+            var gpuGenerator = new CudaCodeGenerator();
+            return new CodeBuilder(gpuGenerator);
         }
     }
 }
