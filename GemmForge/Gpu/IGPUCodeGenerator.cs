@@ -2,6 +2,8 @@ namespace GemmForge.Gpu
 {
     public interface IGPUCodeGenerator
     {
-        string Resolve(MallocShared assignment);
+        string Create(MallocShared assignment);
+        string Create(SharedVariableType assignment);
+
     }
 }

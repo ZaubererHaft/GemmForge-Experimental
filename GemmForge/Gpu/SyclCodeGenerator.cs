@@ -4,15 +4,23 @@ namespace GemmForge.Gpu
 {
     public class SyclCodeGenerator : IGPUCodeGenerator
     {
-        private readonly CppVariableTypeConverter _typeConverter;
+        private readonly IVariableResolver _typeConverter;
 
         public SyclCodeGenerator()
         {
-            _typeConverter = new CppVariableTypeConverter();
+            _typeConverter = new CppVariableResolver(this);
         }
-        public string Resolve(MallocShared assignment)
+        public string Create(MallocShared assignment)
         {
-            return $"malloc_device<{_typeConverter.Convert(assignment.VariableType)}>({assignment.Count})";
+            assignment.VariableType.Resolve(_typeConverter);
+            var typeString = _typeConverter.ExtractResult();
+            
+            return $"malloc_device<{typeString}>({assignment.Count})";
+        }
+
+        public string Create(SharedVariableType assignment)
+        {
+            return assignment.Type;
         }
     }
 }

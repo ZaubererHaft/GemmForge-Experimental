@@ -1,7 +1,8 @@
 namespace GemmForge.Common
 {
-    public enum VariableType
+    public abstract class VariableType
     {
-        SinglePrecisionFloat, DoublePrecisionFloat
+        public abstract void Resolve(IVariableResolver resolver);
+        public abstract string Type { get; }
     }
 }

@@ -4,15 +4,20 @@ namespace GemmForge.Gpu
 {
     public class CudaCodeGenerator : IGPUCodeGenerator
     {
-        private readonly CppVariableTypeConverter _typeConverter;
+        private readonly IVariableResolver _typeConverter;
 
         public CudaCodeGenerator()
         {
-            _typeConverter = new CppVariableTypeConverter();
+            _typeConverter = new CppVariableResolver(this);
         }
-        public string Resolve(MallocShared assignment)
+        public string Create(MallocShared assignment)
         {
-            return $"__shared__";
+            return string.Empty;
+        }
+
+        public string Create(SharedVariableType assignment)
+        {
+            return $"__shared__ {assignment.Type}";
         }
     }
 }

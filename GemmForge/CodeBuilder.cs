@@ -6,13 +6,13 @@ namespace GemmForge
     public class CodeBuilder
     {
         private readonly IExpressionResolver _expressionResolver;
+        private readonly IVariableResolver _typeResolver;
         private readonly Code _code;
-        private readonly CppVariableTypeConverter _typeConverter;
 
         public CodeBuilder(IGPUCodeGenerator gpuCodeGenerator)
         {
             _expressionResolver = new CppExpressionResolver(gpuCodeGenerator);
-            _typeConverter = new CppVariableTypeConverter();
+            _typeResolver = new CppVariableResolver(gpuCodeGenerator);
             _code = new Code();
         }
 
@@ -23,24 +23,38 @@ namespace GemmForge
 
         public CodeBuilder DeclareVariable(Variable variable, Assignment assignment)
         {
-            assignment.Resolve(_expressionResolver);            
-            _code.Append($"{_typeConverter.Convert(variable.VariableType)} {variable.VariableName} {_expressionResolver.ExtractResult()}");
+            variable.VariableType.Resolve(_typeResolver);
+            var typeString = _typeResolver.ExtractResult();
+            
+            assignment.Resolve(_expressionResolver);
+            var assignmentExpression = _expressionResolver.ExtractResult();
+            
+            _code.Append($"{typeString} {variable.VariableName} {assignmentExpression}");
             return this;
         }
         
-        public CodeBuilder DeclarePointer(Variable pointer, Assignment assignment)
+        public CodeBuilder DeclarePointer(Variable variable, Assignment assignment)
         {
-            assignment.Resolve(_expressionResolver);            
-            _code.Append($"{_typeConverter.Convert(pointer.VariableType)} *{pointer.VariableName} {_expressionResolver.ExtractResult()}");
+            variable.VariableType.Resolve(_typeResolver);
+            var typeString = _typeResolver.ExtractResult();
+            
+            assignment.Resolve(_expressionResolver);
+            var assignmentExpression = _expressionResolver.ExtractResult();
+            
+            _code.Append($"{typeString} *{variable.VariableName} {assignmentExpression}");
             return this;
         }
         
-        public CodeBuilder DeclareArray(Variable pointer, Expression assignment)
+        public CodeBuilder DeclareArray(Variable variable, Expression assignment)
         {
-            assignment.Resolve(_expressionResolver);            
-            _code.Append($"{_typeConverter.Convert(pointer.VariableType)} {pointer.VariableName}[{_expressionResolver.ExtractResult()}]");
+            variable.VariableType.Resolve(_typeResolver);
+            var typeString = _typeResolver.ExtractResult();
+            
+            assignment.Resolve(_expressionResolver);
+            var assignmentExpression = _expressionResolver.ExtractResult();
+            
+            _code.Append($"{typeString} {variable.VariableName}[{assignmentExpression}]");
             return this;
         }
- 
     }
 }

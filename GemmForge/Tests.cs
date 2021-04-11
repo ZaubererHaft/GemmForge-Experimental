@@ -12,7 +12,7 @@ namespace GemmForge
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
-            var matrixA = new Variable(VariableType.SinglePrecisionFloat, "A");
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
             var init = new Assignment(new Literal("5"));
             
             var code = builder.DeclareVariable(matrixA, init).Build();
@@ -24,7 +24,7 @@ namespace GemmForge
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
-            var matrixA = new Variable(VariableType.SinglePrecisionFloat, "A");
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
             var init = new Assignment(new Literal("5"));
             
             var code = builder.DeclarePointer(matrixA, init).Build();
@@ -36,8 +36,8 @@ namespace GemmForge
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
-            var matrixA = new Variable(VariableType.SinglePrecisionFloat, "A");
-            var init = new Assignment(new MallocShared(VariableType.SinglePrecisionFloat, 5));
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var init = new Assignment(new MallocShared(new SinglePrecisionFloat(), 5));
             
             var code = builder.DeclarePointer(matrixA, init).Build();
             Assert.AreEqual("float *A = malloc_device<float>(5);\n", code.ToString());
@@ -48,7 +48,7 @@ namespace GemmForge
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
             
-            var matrixA = new Variable(VariableType.SinglePrecisionFloat, "A");
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
             var five = new Literal("5");
             var code = builder.DeclareArray(matrixA, five).Build();
             Assert.AreEqual("float A[5];\n", code.ToString());
@@ -59,8 +59,8 @@ namespace GemmForge
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
             
-            var matrixA = new Variable(VariableType.SinglePrecisionFloat, "A");
-            var code = builder.DeclareArray(matrixA, new MallocShared(VariableType.SinglePrecisionFloat, 5)).Build();
+            var matrixA = new Variable(new SharedVariableType(new SinglePrecisionFloat()), "A");
+            var code = builder.DeclareArray(matrixA, new Literal("5")).Build();
             Assert.AreEqual("__shared__ float A[5];\n", code.ToString());
         }
     }
