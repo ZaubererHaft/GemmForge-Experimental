@@ -20,6 +20,13 @@ namespace GemmForge.Common
             assignment.Expression.Resolve(this);
         }
 
+        public void Resolve(Addition addition)
+        {
+            addition.ExpressionA.Resolve(this);
+            _textBuilder.Append(" + ");
+            addition.ExpressionB.Resolve(this);   
+        }
+
         public void Resolve(MallocShared assignment)
         {
             _textBuilder.Append(_gpuCodeGenerator.Create(assignment));

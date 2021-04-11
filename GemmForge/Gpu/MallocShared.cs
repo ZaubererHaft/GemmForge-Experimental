@@ -5,9 +5,9 @@ namespace GemmForge.Gpu
     public class MallocShared : Expression
     {
         public VariableType VariableType { get; }
-        public uint Count { get; }
+        public Expression Count { get; }
 
-        public MallocShared(VariableType variableType, uint count)
+        public MallocShared(VariableType variableType, Expression count)
         {
             VariableType = variableType;
             Count = count;

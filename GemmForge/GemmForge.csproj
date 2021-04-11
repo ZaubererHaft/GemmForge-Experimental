@@ -45,7 +45,9 @@
         <Compile Include="Code.cs" />
         <Compile Include="CodeBuilder.cs" />
         <Compile Include="CodeBuilderFactory.cs" />
+        <Compile Include="Common\Addition.cs" />
         <Compile Include="Common\Assignment.cs" />
+        <Compile Include="Common\BinaryExpression.cs" />
         <Compile Include="Common\CppExpressionResolver.cs" />
         <Compile Include="Common\CppVariableResolver.cs" />
         <Compile Include="Common\DoublePrecisionFloat.cs" />
