@@ -1,0 +1,5 @@
+obj/
+Debug
+.idea
+packages
+bin
