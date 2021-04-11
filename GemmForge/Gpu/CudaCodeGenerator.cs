@@ -12,9 +12,9 @@ namespace GemmForge.Gpu
             _typeConverter = new CppVariableResolver(this);
             _expressionResolver = new CppExpressionResolver(this);
         }
-        public string Create(MallocShared assignment)
+        public string Create(MallocShared exp)
         {
-            return string.Empty;
+            return $"cudaMallocManaged(&TEST, {exp.Count}, cudaMemAttachGlobal)";
         }
 
         public string Create(SharedVariableType variable)

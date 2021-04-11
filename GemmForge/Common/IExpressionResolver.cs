@@ -4,10 +4,10 @@ namespace GemmForge.Common
 {
     public interface IExpressionResolver
     {
-        void Resolve(Literal literal);
-        void Resolve(Assignment assignment);
-        void Resolve(Addition assignment);
-        void Resolve(MallocShared assignment);
+        void Resolve(Literal expr);
+        void Resolve(Assignment expr);
+        void Resolve(Addition expr);
+        void Resolve(MallocShared expr);
         string ExtractResult();
     }
 }
