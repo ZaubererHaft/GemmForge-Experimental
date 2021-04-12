@@ -23,5 +23,7 @@ namespace GemmForge.Common
 
             return text;
         }
+
+        public int Size => _vars.Length;
     }
 }

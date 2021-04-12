@@ -60,6 +60,16 @@ namespace GemmForge.Gpu
             return string.Empty;
         }
 
+        public string DefineKernel(KernelFunction func)
+        {
+            var retType = func.ReturnType.Type;
+            var body = func.BodyBuilder.Build();
+            var args = func.FunctionArgs.Concat();
+
+            var text = $"__global__ __launch_bounds__(64) {retType} {func.Name}({args}){{\n{body}}}";
+            return text;
+        }
+
         private string LocalShareMemory(Malloc malloc)
         {
             malloc.CountExpression.Resolve(_expressionResolver);

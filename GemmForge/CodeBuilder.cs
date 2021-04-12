@@ -101,5 +101,12 @@ namespace GemmForge
             _code.AppendAndClose($"return {text}");
             return this;
         }
+
+        public CodeBuilder DefineGpuKernel(KernelFunction func)
+        {
+            var text = _gpuCodeGenerator.DefineKernel(func);
+            _code.Append(text);
+            return this;
+        }
     }
 }

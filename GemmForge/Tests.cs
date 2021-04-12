@@ -189,20 +189,51 @@ namespace GemmForge
             var code = builder.DefineFunction(func).Build();
 
             Assert.AreEqual("float func(float A, float B){\nreturn A + B;\n}", code.ToString());
-        }   
+        }
         
         [Test]
-        public void TestLaunchSyclKernel()
+        public void TestDeclareSyclKernelFunction()
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
             var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
             var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
             var stream = new Stream("stream");
-            
-            builder.LaunchGpuKernel(block, grid, stream);
 
+            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
+            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            
+            var code = builder.DefineGpuKernel(kernelFunc).Build();
+
+            Assert.AreEqual("void func(range<3> block, range<3> grid, queue *stream){\n" +
+                                    "stream->submit([&](handler &cgh){" +
+                                    "cgh.parallel_for(nd_range<3>{block, grid}, [=](nd_item<3> item){\n" +
+                                    "});\n});}", code.ToString());
+        }  
+        
+        [Test]
+        public void TestDeclareCudaKernelFunction()
+        {
+            var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            
+            var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
+            var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
+            var stream = new Stream("stream");
+
+            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
+            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            
+            var code = builder.DefineGpuKernel(kernelFunc).Build();
+
+            Assert.AreEqual("__global__ __launch_bounds__(64) void func(){\n}", code.ToString());
         }
         
+        [Test]
+        public void TestLaunchSyclKernel()
+        {
+            
+        }
     }
 }

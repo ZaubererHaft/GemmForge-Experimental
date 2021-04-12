@@ -64,6 +64,7 @@
         <Compile Include="Gpu\CudaCodeGenerator.cs" />
         <Compile Include="Gpu\GpuVariable.cs" />
         <Compile Include="Gpu\IGPUCodeGenerator.cs" />
+        <Compile Include="Gpu\KernelFunction.cs" />
         <Compile Include="Gpu\Malloc.cs" />
         <Compile Include="Gpu\Range.cs" />
         <Compile Include="Gpu\Stream.cs" />

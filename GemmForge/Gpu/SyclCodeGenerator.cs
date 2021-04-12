@@ -51,5 +51,21 @@ namespace GemmForge.Gpu
         {
             return string.Empty;
         }
+
+        public string DefineKernel(KernelFunction func)
+        {
+            var retType = func.ReturnType.Type;
+            var body = func.BodyBuilder.Build();
+            var args = func.FunctionArgs.Concat();
+            var kernelBody = $"{func.Stream.Name}->submit([&](handler &cgh){{" +
+                             $"cgh.parallel_for(nd_range<3>{{{func.Block.Name}, {func.Grid.Name}}}, [=](nd_item<3> item){{\n" +
+                             body +
+                             "});\n" +
+                             "});";
+
+            var comma = func.FunctionArgs.Size > 0 ? ", " : string.Empty;
+            var text = $"{retType} {func.Name}({args}{comma}range<3> {func.Block.Name}, range<3> {func.Grid.Name}, queue *{func.Stream.Name}){{\n{kernelBody}}}";
+            return text;
+        }
     }
 }
