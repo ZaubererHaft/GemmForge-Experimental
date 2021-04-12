@@ -63,7 +63,7 @@ namespace GemmForge.Gpu
 
         public IGPUCodeBuilder DefineKernel(KernelFunction func)
         {
-            var body = func.Builder.Build();
+            var body = func.Builder.Generate();
             var args = func.Args.Concat();
 
             _code.Append($"__global__ __launch_bounds__(64) void {func.Name}({args}){{\n{body}}}\n");

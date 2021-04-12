@@ -68,7 +68,7 @@ namespace GemmForge.Gpu
         {
             //ToDo: multiply range to global range
             var retType = "void";
-            var body = func.Builder.Build();
+            var body = func.Builder.Generate();
             var args = func.Args.Concat();
             var kernelBody = $"{func.Stream.Name}->submit([&](handler &cgh){{" +
                              $"cgh.parallel_for(nd_range<3>{{{func.Block.Name}, {func.Grid.Name}}}, [=](nd_item<3> item){{\n" +

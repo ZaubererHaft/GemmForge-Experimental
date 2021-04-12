@@ -9,7 +9,7 @@ namespace GemmForge
             var code = new Code();
             var gpuGenerator = new SyclCodeBuilder(code);
             var hostGenerator = new HostCodeBuilder(code);
-            return new CodeBuilder(hostGenerator, gpuGenerator);
+            return new CodeBuilder(code, hostGenerator, gpuGenerator);
         }
 
         public CodeBuilder CreateCppCUDACodeBuilder()
@@ -17,7 +17,7 @@ namespace GemmForge
             var code = new Code();
             var gpuGenerator = new CudaCodeBuilder(code);
             var hostGenerator = new HostCodeBuilder(code);
-            return new CodeBuilder(hostGenerator, gpuGenerator);
+            return new CodeBuilder(code, hostGenerator, gpuGenerator);
         }
     }
 }

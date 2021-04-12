@@ -6,12 +6,12 @@ namespace GemmForge.Gpu
     {
         public string Name { get; }
         public FunctionArguments Args { get; }
-        public IGPUCodeBuilder Builder { get; }
+        public CodeBuilder Builder { get; }
         public Range Block { get; }
         public Range Grid { get; }
         public Stream Stream { get; }
 
-        public KernelFunction(string name, FunctionArguments args, IGPUCodeBuilder builder, Range block, Range grid, Stream stream)
+        public KernelFunction(string name, FunctionArguments args, CodeBuilder builder, Range block, Range grid, Stream stream)
         {
             Name = name;
             Args = args;
