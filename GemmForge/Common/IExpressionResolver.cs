@@ -7,7 +7,6 @@ namespace GemmForge.Common
         void Resolve(Literal expr);
         void Resolve(Assignment expr);
         void Resolve(Addition expr);
-        void Resolve(MallocShared expr);
         string ExtractResult();
     }
 }

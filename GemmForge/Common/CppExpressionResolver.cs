@@ -6,11 +6,9 @@ namespace GemmForge.Common
     public class CppExpressionResolver : IExpressionResolver
     {
         private readonly StringBuilder _textBuilder;
-        private readonly IGPUCodeGenerator _gpuCodeGenerator;
 
-        public CppExpressionResolver(IGPUCodeGenerator gpuCodeGenerator)
+        public CppExpressionResolver()
         {
-            _gpuCodeGenerator = gpuCodeGenerator;
             _textBuilder = new StringBuilder();
         }
 
@@ -25,11 +23,6 @@ namespace GemmForge.Common
             addition.ExpressionA.Resolve(this);
             _textBuilder.Append(" + ");
             addition.ExpressionB.Resolve(this);   
-        }
-
-        public void Resolve(MallocShared assignment)
-        {
-            _textBuilder.Append(_gpuCodeGenerator.Create(assignment));
         }
 
         public void Resolve(Literal literal)

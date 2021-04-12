@@ -4,24 +4,42 @@ namespace GemmForge.Gpu
 {
     public class CudaCodeGenerator : IGPUCodeGenerator
     {
-        private readonly IVariableResolver _typeConverter;
+        private readonly IVariableResolver _typeResolver;
         private readonly IExpressionResolver _expressionResolver;
 
         public CudaCodeGenerator()
         {
-            _typeConverter = new CppVariableResolver(this);
-            _expressionResolver = new CppExpressionResolver(this);
+            _typeResolver = new CppVariableResolver();
+            _expressionResolver = new CppExpressionResolver();
         }
-        public string Create(MallocShared exp)
+        
+        public string MallocSharedMemory(Malloc malloc)
         {
-            exp.Count.Resolve(_expressionResolver);
-            var subex = _expressionResolver.ExtractResult();
-            return $"cudaMallocManaged(&{exp.Variable.VariableName}, {subex}, cudaMemAttachGlobal)";
+            if (malloc.Hints == MallocHints.MallocLocal)
+            {
+                return LocalShareMemory(malloc);
+            }
+            
+            malloc.Variable.VariableType.Resolve(_typeResolver);
+            var typeString = _typeResolver.ExtractResult();
+            
+            malloc.CountExpression.Resolve(_expressionResolver);
+            var assignmentExpression = _expressionResolver.ExtractResult();
+
+            var text = $"{typeString} *{malloc.Variable.VariableName};\n";
+            text += $"cudaMallocManaged(&{malloc.Variable.VariableName}, {assignmentExpression} * sizeof({typeString}), cudaMemAttachGlobal);\n";
+            return text;
         }
 
-        public string Create(SharedVariableType variable)
+        private string LocalShareMemory(Malloc malloc)
         {
-            return $"__shared__ {variable.Type}";
+            malloc.Variable.VariableType.Resolve(_typeResolver);
+            var typeString = _typeResolver.ExtractResult();
+            
+            malloc.CountExpression.Resolve(_expressionResolver);
+            var assignmentExpression = _expressionResolver.ExtractResult();
+
+            return $"__shared__ {typeString} {malloc.Variable.VariableName}[{assignmentExpression}];\n";
         }
     }
 }

@@ -6,7 +6,6 @@ namespace GemmForge.Common
     {
         void Resolve(SinglePrecisionFloat variableType);
         void Resolve(DoublePrecisionFloat variableType);
-        void Resolve(SharedVariableType variableType);
         string ExtractResult();
     }
 }

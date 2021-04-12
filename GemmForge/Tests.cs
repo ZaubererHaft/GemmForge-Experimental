@@ -43,34 +43,57 @@ namespace GemmForge
         }
         
         [Test]
-        public void TestDeclareCudaSharedMemory()
+        public void TestDeclareCudaSharedLocalMemory()
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
             
-            var matrixA = new Variable(new SharedVariableType(new SinglePrecisionFloat()), "A");
-            var code = builder.DeclareArray(matrixA, new Literal("5")).Build();
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var code = builder.MallocGpuSharedMemory(new Malloc(matrixA, new Literal("5"), MallocHints.MallocLocal)).Build();
             Assert.AreEqual("__shared__ float A[5];\n", code.ToString());
         }
         
         [Test]
-        public void TestDeclareCudaSharedMemoryWithAddition()
+        public void TestDeclareCudaSharedLocalMemoryWithAddition()
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
             
-            var matrixA = new Variable(new SharedVariableType(new SinglePrecisionFloat()), "A");
-            var code = builder.DeclareArray(matrixA, new Addition(new Literal("5"), new Literal("10"))).Build();
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var malloc = new Malloc(matrixA, new Addition(new Literal("5"), new Literal("10")), MallocHints.MallocLocal);
+            var code = builder.MallocGpuSharedMemory(malloc).Build();
             Assert.AreEqual("__shared__ float A[5 + 10];\n", code.ToString());
         }
         
         [Test]
-        public void TestDeclareSyclSharedMemory()
+        public void TestDeclareCudaSharedGlobalMemory()
+        {
+            var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
+            
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var malloc = new Malloc(matrixA, new Literal("5"));
+            var code = builder.MallocGpuSharedMemory(malloc).Build();
+            Assert.AreEqual("float *A;\ncudaMallocManaged(&A, 5 * sizeof(float), cudaMemAttachGlobal);\n", code.ToString());
+        }
+        
+        [Test]
+        public void TestDeclareSyclSharedLocalMemory()
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
-            var matrixA = new Variable(new SharedVariableType(new SinglePrecisionFloat()), "A");
-            var code = builder.DeclareArray(matrixA, new Literal("5")).Build();
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var code = builder.MallocGpuSharedMemory(new Malloc(matrixA, new Literal("5"), MallocHints.MallocLocal)).Build();
             Assert.AreEqual("float *A = malloc_shared<float>(5);\n", code.ToString());
         } 
+
+        
+        [Test]
+        public void TestDeclareSyclSharedGlobalMemory()
+        {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            
+            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
+            var code = builder.MallocGpuSharedMemory(new Malloc(matrixA, new Literal("5"))).Build();
+            Assert.AreEqual("float *A = malloc_shared<float>(5);\n", code.ToString());
+        }
         
         [Test]
         public void TestDeclareWithoutInit()
@@ -83,27 +106,7 @@ namespace GemmForge
             Assert.AreEqual("float *A;\n", code.ToString());
         }
         
-        [Test]
-        public void TestCUDAMallocMemory()
-        {
-            var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
-            
-            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
-            var code = builder.MallocMemory(matrixA, new MallocShared(matrixA, new Literal("5"))).Build();
-            
-            Assert.AreEqual("float *A;\ncudaMallocManaged(&A, 5, cudaMemAttachGlobal);\n", code.ToString());
-        }
-        
-        [Test]
-        public void TestSYCLMallocMemory()
-        {
-            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
-            
-            var matrixA = new Variable(new SinglePrecisionFloat(), "A");
-            var code = builder.MallocMemory(matrixA, new MallocShared(matrixA, new Literal("5"))).Build();
-            
-            Assert.AreEqual("float *A;\nA = malloc_device<float>(5);\n", code.ToString());
-        }
+
         
     }
 }

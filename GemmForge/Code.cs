@@ -11,9 +11,14 @@ namespace GemmForge
             _stringBuilder = new StringBuilder();
         }
 
-        public void Append(string code)
+        public void AppendAndClose(string code)
         {
             _stringBuilder.Append(code).Append(";\n");
+        }
+        
+        public void Append(string code)
+        {
+            _stringBuilder.Append(code);
         }
 
         public override string ToString()

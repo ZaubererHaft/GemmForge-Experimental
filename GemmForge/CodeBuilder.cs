@@ -5,14 +5,16 @@ namespace GemmForge
 {
     public class CodeBuilder
     {
+        private readonly IGPUCodeGenerator _gpuCodeGenerator;
         private readonly IExpressionResolver _expressionResolver;
         private readonly IVariableResolver _typeResolver;
         private readonly Code _code;
 
         public CodeBuilder(IGPUCodeGenerator gpuCodeGenerator)
         {
-            _expressionResolver = new CppExpressionResolver(gpuCodeGenerator);
-            _typeResolver = new CppVariableResolver(gpuCodeGenerator);
+            _gpuCodeGenerator = gpuCodeGenerator;
+            _expressionResolver = new CppExpressionResolver();
+            _typeResolver = new CppVariableResolver();
             _code = new Code();
         }
 
@@ -29,7 +31,7 @@ namespace GemmForge
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.Append($"{typeString} {variable.VariableName} {assignmentExpression}");
+            _code.AppendAndClose($"{typeString} {variable.VariableName} {assignmentExpression}");
             return this;
         }
         
@@ -41,7 +43,7 @@ namespace GemmForge
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.Append($"{typeString} *{variable.VariableName} {assignmentExpression}");
+            _code.AppendAndClose($"{typeString} *{variable.VariableName} {assignmentExpression}");
             return this;
         }
         
@@ -50,7 +52,7 @@ namespace GemmForge
             variable.VariableType.Resolve(_typeResolver);
             var typeString = _typeResolver.ExtractResult();
             
-            _code.Append($"{typeString} *{variable.VariableName}");
+            _code.AppendAndClose($"{typeString} *{variable.VariableName}");
             return this;
         }
         
@@ -62,21 +64,14 @@ namespace GemmForge
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.Append($"{typeString} {variable.VariableName}[{assignmentExpression}]");
+            _code.AppendAndClose($"{typeString} {variable.VariableName}[{assignmentExpression}]");
             return this;
         }
 
-        public CodeBuilder MallocMemory(Variable variable, MallocShared expr)
+        public CodeBuilder MallocGpuSharedMemory(Malloc expr)
         {
-            variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
-            expr.Resolve(_expressionResolver);
-            var assignmentExpression = _expressionResolver.ExtractResult();
-            
-            _code.Append($"{typeString} *{variable.VariableName}");
-            _code.Append(assignmentExpression);
-            
+            var text = _gpuCodeGenerator.MallocSharedMemory(expr);
+            _code.Append(text);
             return this;
         }
     }

@@ -9,24 +9,19 @@ namespace GemmForge.Gpu
 
         public SyclCodeGenerator()
         {
-            _typeConverter = new CppVariableResolver(this);
-            _expressionResolver = new CppExpressionResolver(this);
+            _typeConverter = new CppVariableResolver();
+            _expressionResolver = new CppExpressionResolver();
         }
 
-        public string Create(MallocShared assignment)
+        public string MallocSharedMemory(Malloc malloc)
         {
-            assignment.Variable.VariableType.Resolve(_typeConverter);
+            malloc.Variable.VariableType.Resolve(_typeConverter);
             var typeString = _typeConverter.ExtractResult();
 
-            assignment.Count.Resolve(_expressionResolver);
+            malloc.CountExpression.Resolve(_expressionResolver);
             var expString = _expressionResolver.ExtractResult();
             
-            return $"{assignment.Variable.VariableName} = malloc_device<{typeString}>({expString})";
-        }
-
-        public string Create(SharedVariableType assignment)
-        {
-            return assignment.Type;
+            return $"{typeString} *{malloc.Variable.VariableName} = malloc_shared<{typeString}>({expString});\n";
         }
     }
 }
