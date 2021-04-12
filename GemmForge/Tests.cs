@@ -195,14 +195,12 @@ namespace GemmForge
         public void TestDeclareSyclKernelFunction()
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
-            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
             var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
             var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
             var stream = new Stream("stream");
 
-            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
-            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            var kernelFunc = new KernelFunction("func", new FunctionArguments(), new KernelBuilder(), block, grid, stream);
             
             var code = builder.DefineGpuKernel(kernelFunc).Build();
 
@@ -216,14 +214,12 @@ namespace GemmForge
         public void TestDeclareCudaKernelFunction()
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
-            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
             var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
             var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
             var stream = new Stream("stream");
 
-            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
-            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            var kernelFunc = new KernelFunction("func", new FunctionArguments(), new KernelBuilder(), block, grid, stream);
             
             var code = builder.DefineGpuKernel(kernelFunc).Build();
 
@@ -234,14 +230,12 @@ namespace GemmForge
         public void TestLaunchSyclKernel()
         {
             var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
-            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
             var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
             var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
             var stream = new Stream("stream");
 
-            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
-            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            var kernelFunc = new KernelFunction("func", new FunctionArguments(), new KernelBuilder(), block, grid, stream);
 
             var code = builder.LaunchGpuKernel(kernelFunc).Build();
             Assert.AreEqual("func(block, grid, stream);\n", code.ToString());
@@ -251,14 +245,12 @@ namespace GemmForge
         public void TestLaunchCudaKernel()
         {
             var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
-            var methodBuilder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
             
             var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
             var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
             var stream = new Stream("stream");
 
-            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
-            var kernelFunc = new KernelFunction(func, block, grid, stream);
+            var kernelFunc = new KernelFunction("func", new FunctionArguments(), new KernelBuilder(), block, grid, stream);
 
             var code = builder.LaunchGpuKernel(kernelFunc).Build();
             Assert.AreEqual("func<<<grid, block, 0, stream>>>();\n", code.ToString());

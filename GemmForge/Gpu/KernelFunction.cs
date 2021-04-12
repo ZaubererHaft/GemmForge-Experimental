@@ -8,7 +8,7 @@ namespace GemmForge.Gpu
         public Range Grid { get; }
         public Stream Stream { get; }
 
-        public KernelFunction(Function function, Range block, Range grid, Stream stream) : base(function.Name, function.ReturnType, function.FunctionArgs, function.BodyBuilder)
+        public KernelFunction(string name, FunctionArguments args, KernelBuilder builder, Range block, Range grid, Stream stream) : base(name, new VoidType(), args, builder)
         {
             Block = block;
             Grid = grid;
