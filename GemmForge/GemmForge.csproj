@@ -48,6 +48,7 @@
         <Compile Include="Common\Addition.cs" />
         <Compile Include="Common\Assignment.cs" />
         <Compile Include="Common\BinaryExpression.cs" />
+        <Compile Include="Common\HostCodeBuilder.cs" />
         <Compile Include="Common\CppExpressionResolver.cs" />
         <Compile Include="Common\DoublePrecisionFloat.cs" />
         <Compile Include="Common\Expression.cs" />
@@ -61,15 +62,14 @@
         <Compile Include="Common\Variable.cs" />
         <Compile Include="Common\VariableType.cs" />
         <Compile Include="Common\VoidType.cs" />
-        <Compile Include="Gpu\CudaCodeGenerator.cs" />
+        <Compile Include="Gpu\CudaCodeBuilder.cs" />
         <Compile Include="Gpu\GpuVariable.cs" />
-        <Compile Include="Gpu\IGPUCodeGenerator.cs" />
-        <Compile Include="Gpu\KernelBuilder.cs" />
+        <Compile Include="Gpu\IGPUCodeBuilder.cs" />
         <Compile Include="Gpu\KernelFunction.cs" />
         <Compile Include="Gpu\Malloc.cs" />
         <Compile Include="Gpu\Range.cs" />
         <Compile Include="Gpu\Stream.cs" />
-        <Compile Include="Gpu\SyclCodeGenerator.cs" />
+        <Compile Include="Gpu\SyclCodeBuilder.cs" />
         <Compile Include="Tests.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

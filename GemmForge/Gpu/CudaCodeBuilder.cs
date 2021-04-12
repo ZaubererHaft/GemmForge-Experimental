@@ -3,16 +3,18 @@ using GemmForge.Common;
 
 namespace GemmForge.Gpu
 {
-    public class CudaCodeGenerator : IGPUCodeGenerator
+    public class CudaCodeBuilder : IGPUCodeBuilder
     {
+        private readonly Code _code;
         private readonly IExpressionResolver _expressionResolver;
 
-        public CudaCodeGenerator()
+        public CudaCodeBuilder(Code code)
         {
+            _code = code;
             _expressionResolver = new CppExpressionResolver();
         }
         
-        public string MallocSharedMemory(Malloc malloc)
+        public IGPUCodeBuilder MallocSharedMemory(Malloc malloc)
         {
             if (malloc.Hints == MallocHints.MallocLocal)
             {
@@ -23,11 +25,13 @@ namespace GemmForge.Gpu
             var assignmentExpression = _expressionResolver.ExtractResult();
 
             var text = $"{malloc.Variable.TypeString} *{malloc.Variable.VariableName};\n";
-            text += $"cudaMallocManaged(&{malloc.Variable.VariableName}, {assignmentExpression} * sizeof({malloc.Variable.TypeString}), cudaMemAttachGlobal);\n";
-            return text;
+            text += $"cudaMallocManaged(&{malloc.Variable.VariableName}, {assignmentExpression} * sizeof({malloc.Variable.TypeString}), cudaMemAttachGlobal)";
+            
+            _code.AppendAndClose(text);
+            return this;
         }
 
-        public string DeclareKernelRange(Range localCount, Range localSize)
+        public IGPUCodeBuilder DeclareKernelRange(Range localCount, Range localSize)
         {
             localCount.X.Resolve(_expressionResolver);
             var countXExp = _expressionResolver.ExtractResult();
@@ -47,35 +51,43 @@ namespace GemmForge.Gpu
             
             var s2 = "dim3 " + localSize.Name + " (" + sizeXExp + ", " + sizeYExp + ", " + sizeZExp + ");\n";
 
-            return s1 + s2;
+            _code.Append(s1 + s2);
+            return this;
         }
 
-        public string InitStreamByPointer(Stream stream, Variable ptr)
+        public IGPUCodeBuilder InitStreamByPointer(Stream stream, Variable ptr)
         {
-            return $"cudaStream_t {stream.Name} = static_cast<cudaStream_t>({ptr.VariableName});\n";
+            _code.AppendAndClose($"cudaStream_t {stream.Name} = static_cast<cudaStream_t>({ptr.VariableName})");
+            return this;
         }
 
-        public string DefineKernel(KernelFunction func)
+        public IGPUCodeBuilder DefineKernel(KernelFunction func)
         {
-            var retType = func.ReturnType.Type;
-            var body = func.BodyBuilder.Build();
-            var args = func.FunctionArgs.Concat();
+            var body = func.Builder.Build();
+            var args = func.Args.Concat();
 
-            var text = $"__global__ __launch_bounds__(64) {retType} {func.Name}({args}){{\n{body}}}\n";
-            return text;
+            _code.Append($"__global__ __launch_bounds__(64) void {func.Name}({args}){{\n{body}}}\n");
+            return this;
         }
 
-        public string LaunchKernel(KernelFunction function)
+        public IGPUCodeBuilder LaunchKernel(KernelFunction function)
         {
-            return $"{function.Name}<<<{function.Grid.Name}, {function.Block.Name}, 0, {function.Stream.Name}>>>({function.FunctionArgs.Concat()});\n";
+            _code.Append($"{function.Name}<<<{function.Grid.Name}, {function.Block.Name}, 0, {function.Stream.Name}>>>({function.Args.Concat()});\n");
+            return this;
         }
 
-        private string LocalShareMemory(Malloc malloc)
+        public Code Build()
+        {
+            return _code;
+        }
+
+        private IGPUCodeBuilder LocalShareMemory(Malloc malloc)
         {
             malloc.CountExpression.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
 
-            return $"__shared__ {malloc.Variable.TypeString} {malloc.Variable.VariableName}[{assignmentExpression}];\n";
+            _code.Append($"__shared__ {malloc.Variable.TypeString} {malloc.Variable.VariableName}[{assignmentExpression}];\n");
+            return this;
         }
     }
 }
