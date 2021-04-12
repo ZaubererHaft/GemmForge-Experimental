@@ -41,5 +41,15 @@ namespace GemmForge.Gpu
 
             return s1 + s2;
         }
+
+        public string InitStreamByPointer(Stream stream, Variable ptr)
+        {
+            return $"queue {stream.Name} = static_cast<queue>({ptr.VariableName});\n";
+        }
+
+        public string LaunchKernel(Range block, Range grid, Stream stream)
+        {
+            return string.Empty;
+        }
     }
 }

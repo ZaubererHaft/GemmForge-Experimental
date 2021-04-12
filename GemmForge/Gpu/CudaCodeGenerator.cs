@@ -1,3 +1,4 @@
+using System;
 using GemmForge.Common;
 
 namespace GemmForge.Gpu
@@ -47,6 +48,16 @@ namespace GemmForge.Gpu
             var s2 = "dim3 " + localSize.Name + " (" + sizeXExp + ", " + sizeYExp + ", " + sizeZExp + ");\n";
 
             return s1 + s2;
+        }
+
+        public string InitStreamByPointer(Stream stream, Variable ptr)
+        {
+            return $"cudaStream_t {stream.Name} = static_cast<cudaStream_t>({ptr.VariableName});\n";
+        }
+
+        public string LaunchKernel(Range block, Range grid, Stream stream)
+        {
+            return string.Empty;
         }
 
         private string LocalShareMemory(Malloc malloc)

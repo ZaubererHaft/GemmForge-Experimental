@@ -138,5 +138,43 @@ namespace GemmForge
             Assert.AreEqual(s1, code.ToString());
         }
         
+        [Test]
+        public void TestSyclInitStreamByPointer()
+        {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            var ptr = new Variable(new VoidType(), "stream");
+            
+            var q = new Stream("q");
+            var code = builder.InitStreamByPointer(q, ptr).Build();
+            
+            Assert.AreEqual("queue q = static_cast<queue>(stream);\n", code.ToString());
+        }
+        
+        [Test]
+        public void TestCudaInitStreamByPointer()
+        {
+            var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
+            var ptr = new Variable(new VoidType(), "stream");
+            
+            var q = new Stream("q");
+            var code = builder.InitStreamByPointer(q, ptr).Build();
+            
+            Assert.AreEqual("cudaStream_t q = static_cast<cudaStream_t>(stream);\n", code.ToString());
+        }
+        
+        
+        [Test]
+        public void TestLaunchSyclKernel()
+        {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            
+            var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
+            var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
+            var stream = new Stream("stream");
+            
+            builder.LaunchGpuKernel(block, grid, stream);
+
+        }
+        
     }
 }

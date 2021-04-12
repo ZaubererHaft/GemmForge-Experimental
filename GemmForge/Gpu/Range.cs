@@ -1,15 +1,15 @@
-namespace GemmForge.Common
+using GemmForge.Common;
+
+namespace GemmForge.Gpu
 {
-    public class Range 
+    public class Range : GpuVariable
     {
-        public string Name { get; }
         public Expression X { get; }
         public Expression Y { get; }
         public Expression Z { get; }
 
-        public Range(string name, Expression x, Expression y, Expression z)
+        public Range(string name, Expression x, Expression y, Expression z) : base(name)
         {
-            Name = name;    
             X = x;
             Y = y;
             Z = z;

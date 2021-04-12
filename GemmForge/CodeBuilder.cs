@@ -67,6 +67,19 @@ namespace GemmForge
             _code.Append(text);
             return this;
         }
-        
+
+        public CodeBuilder InitStreamByPointer(Stream stream, Variable ptr)
+        {
+            var text = _gpuCodeGenerator.InitStreamByPointer(stream, ptr);
+            _code.Append(text);
+            return this;
+        }
+
+        public CodeBuilder LaunchGpuKernel(Range block, Range grid, Stream stream)
+        {
+            var text = _gpuCodeGenerator.LaunchKernel(block, grid, stream);
+            _code.Append(text);
+            return this;
+        }
     }
 }

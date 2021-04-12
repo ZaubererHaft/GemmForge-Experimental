@@ -6,5 +6,7 @@ namespace GemmForge.Gpu
     {
         string MallocSharedMemory(Malloc malloc);
         string DeclareKernelRange(Range localCount, Range localSize);
+        string InitStreamByPointer(Stream stream, Variable ptr);
+        string LaunchKernel(Range block, Range grid, Stream stream);
     }
 }
