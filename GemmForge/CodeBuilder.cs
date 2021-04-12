@@ -7,14 +7,12 @@ namespace GemmForge
     {
         private readonly IGPUCodeGenerator _gpuCodeGenerator;
         private readonly IExpressionResolver _expressionResolver;
-        private readonly IVariableResolver _typeResolver;
         private readonly Code _code;
 
         public CodeBuilder(IGPUCodeGenerator gpuCodeGenerator)
         {
             _gpuCodeGenerator = gpuCodeGenerator;
             _expressionResolver = new CppExpressionResolver();
-            _typeResolver = new CppVariableResolver();
             _code = new Code();
         }
 
@@ -25,46 +23,34 @@ namespace GemmForge
 
         public CodeBuilder DeclareVariable(Variable variable, Assignment assignment)
         {
-            variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.AppendAndClose($"{typeString} {variable.VariableName} {assignmentExpression}");
+            _code.AppendAndClose($"{variable.TypeString} {variable.VariableName} {assignmentExpression}");
             return this;
         }
         
         public CodeBuilder DeclarePointer(Variable variable, Assignment assignment)
         {
-            variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.AppendAndClose($"{typeString} *{variable.VariableName} {assignmentExpression}");
+            _code.AppendAndClose($"{variable.TypeString} *{variable.VariableName} {assignmentExpression}");
             return this;
         }
         
         public CodeBuilder DeclarePointer(Variable variable)
         {
-            variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
-            _code.AppendAndClose($"{typeString} *{variable.VariableName}");
+            _code.AppendAndClose($"{variable.VariableType.Type} *{variable.VariableName}");
             return this;
         }
         
         public CodeBuilder DeclareArray(Variable variable, Expression assignment)
         {
-            variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
             assignment.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
             
-            _code.AppendAndClose($"{typeString} {variable.VariableName}[{assignmentExpression}]");
+            _code.AppendAndClose($"{variable.TypeString} {variable.VariableName}[{assignmentExpression}]");
             return this;
         }
 
@@ -74,5 +60,13 @@ namespace GemmForge
             _code.Append(text);
             return this;
         }
+        
+        public CodeBuilder DeclareGpuKernelRange(Range localCount, Range localSize)
+        {
+            var text = _gpuCodeGenerator.DeclareKernelRange(localCount, localSize);
+            _code.Append(text);
+            return this;
+        }
+        
     }
 }

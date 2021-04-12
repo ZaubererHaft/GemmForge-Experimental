@@ -49,11 +49,9 @@
         <Compile Include="Common\Assignment.cs" />
         <Compile Include="Common\BinaryExpression.cs" />
         <Compile Include="Common\CppExpressionResolver.cs" />
-        <Compile Include="Common\CppVariableResolver.cs" />
         <Compile Include="Common\DoublePrecisionFloat.cs" />
         <Compile Include="Common\Expression.cs" />
         <Compile Include="Common\IExpressionResolver.cs" />
-        <Compile Include="Common\IVariableResolver.cs" />
         <Compile Include="Common\Literal.cs" />
         <Compile Include="Common\MallocHints.cs" />
         <Compile Include="Common\SinglePrecisionFloat.cs" />
@@ -63,6 +61,7 @@
         <Compile Include="Gpu\CudaCodeGenerator.cs" />
         <Compile Include="Gpu\IGPUCodeGenerator.cs" />
         <Compile Include="Gpu\Malloc.cs" />
+        <Compile Include="Gpu\Range.cs" />
         <Compile Include="Gpu\SyclCodeGenerator.cs" />
         <Compile Include="Tests.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />

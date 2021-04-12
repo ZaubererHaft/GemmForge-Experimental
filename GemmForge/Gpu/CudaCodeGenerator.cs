@@ -4,12 +4,10 @@ namespace GemmForge.Gpu
 {
     public class CudaCodeGenerator : IGPUCodeGenerator
     {
-        private readonly IVariableResolver _typeResolver;
         private readonly IExpressionResolver _expressionResolver;
 
         public CudaCodeGenerator()
         {
-            _typeResolver = new CppVariableResolver();
             _expressionResolver = new CppExpressionResolver();
         }
         
@@ -19,27 +17,44 @@ namespace GemmForge.Gpu
             {
                 return LocalShareMemory(malloc);
             }
-            
-            malloc.Variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
+
             malloc.CountExpression.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
 
-            var text = $"{typeString} *{malloc.Variable.VariableName};\n";
-            text += $"cudaMallocManaged(&{malloc.Variable.VariableName}, {assignmentExpression} * sizeof({typeString}), cudaMemAttachGlobal);\n";
+            var text = $"{malloc.Variable.TypeString} *{malloc.Variable.VariableName};\n";
+            text += $"cudaMallocManaged(&{malloc.Variable.VariableName}, {assignmentExpression} * sizeof({malloc.Variable.TypeString}), cudaMemAttachGlobal);\n";
             return text;
+        }
+
+        public string DeclareKernelRange(Range localCount, Range localSize)
+        {
+            localCount.X.Resolve(_expressionResolver);
+            var countXExp = _expressionResolver.ExtractResult();
+            localCount.Y.Resolve(_expressionResolver);
+            var countYExp = _expressionResolver.ExtractResult();
+            localCount.Z.Resolve(_expressionResolver);
+            var countZExp = _expressionResolver.ExtractResult();
+
+            var s1 = "dim3 " + localCount.Name + " (" + countXExp + ", " + countYExp + ", " + countZExp + ");\n";
+            
+            localSize.X.Resolve(_expressionResolver);
+            var sizeXExp = _expressionResolver.ExtractResult();
+            localSize.Y.Resolve(_expressionResolver);
+            var sizeYExp = _expressionResolver.ExtractResult();
+            localSize.Z.Resolve(_expressionResolver);
+            var sizeZExp = _expressionResolver.ExtractResult();
+            
+            var s2 = "dim3 " + localSize.Name + " (" + sizeXExp + ", " + sizeYExp + ", " + sizeZExp + ");\n";
+
+            return s1 + s2;
         }
 
         private string LocalShareMemory(Malloc malloc)
         {
-            malloc.Variable.VariableType.Resolve(_typeResolver);
-            var typeString = _typeResolver.ExtractResult();
-            
             malloc.CountExpression.Resolve(_expressionResolver);
             var assignmentExpression = _expressionResolver.ExtractResult();
 
-            return $"__shared__ {typeString} {malloc.Variable.VariableName}[{assignmentExpression}];\n";
+            return $"__shared__ {malloc.Variable.TypeString} {malloc.Variable.VariableName}[{assignmentExpression}];\n";
         }
     }
 }

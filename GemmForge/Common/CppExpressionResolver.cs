@@ -12,6 +12,11 @@ namespace GemmForge.Common
             _textBuilder = new StringBuilder();
         }
 
+        public void Resolve(Variable expr)
+        {
+            _textBuilder.Append(expr.VariableName);
+        }
+
         public void Resolve(Assignment assignment)
         {
             _textBuilder.Append($"= ");

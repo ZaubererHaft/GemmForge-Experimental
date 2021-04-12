@@ -4,24 +4,42 @@ namespace GemmForge.Gpu
 {
     public class SyclCodeGenerator : IGPUCodeGenerator
     {
-        private readonly IVariableResolver _typeConverter;
         private readonly IExpressionResolver _expressionResolver;
 
         public SyclCodeGenerator()
         {
-            _typeConverter = new CppVariableResolver();
             _expressionResolver = new CppExpressionResolver();
         }
 
         public string MallocSharedMemory(Malloc malloc)
         {
-            malloc.Variable.VariableType.Resolve(_typeConverter);
-            var typeString = _typeConverter.ExtractResult();
-
             malloc.CountExpression.Resolve(_expressionResolver);
             var expString = _expressionResolver.ExtractResult();
             
-            return $"{typeString} *{malloc.Variable.VariableName} = malloc_shared<{typeString}>({expString});\n";
+            return $"{malloc.Variable.TypeString} *{malloc.Variable.VariableName} = malloc_shared<{malloc.Variable.TypeString}>({expString});\n";
+        }
+
+        public string DeclareKernelRange(Range localCount, Range localSize)
+        {
+            localCount.X.Resolve(_expressionResolver);
+            var countXExp = _expressionResolver.ExtractResult();
+            localCount.Y.Resolve(_expressionResolver);
+            var countYExp = _expressionResolver.ExtractResult();
+            localCount.Z.Resolve(_expressionResolver);
+            var countZExp = _expressionResolver.ExtractResult();
+
+            var s1 = "range<3> " + localCount.Name + " {" + countXExp + ", " + countYExp + ", " + countZExp + "};\n";
+            
+            localSize.X.Resolve(_expressionResolver);
+            var sizeXExp = _expressionResolver.ExtractResult();
+            localSize.Y.Resolve(_expressionResolver);
+            var sizeYExp = _expressionResolver.ExtractResult();
+            localSize.Z.Resolve(_expressionResolver);
+            var sizeZExp = _expressionResolver.ExtractResult();
+            
+            var s2 = "range<3> " + localSize.Name + " {" + sizeXExp + ", " + sizeYExp + ", " + sizeZExp + "};\n";
+
+            return s1 + s2;
         }
     }
 }
