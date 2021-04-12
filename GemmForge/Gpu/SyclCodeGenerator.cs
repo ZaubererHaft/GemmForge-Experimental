@@ -47,13 +47,15 @@ namespace GemmForge.Gpu
             return $"queue {stream.Name} = static_cast<queue>({ptr.VariableName});\n";
         }
 
-        public string LaunchKernel(Range block, Range grid, Stream stream)
+        public string LaunchKernel(KernelFunction function)
         {
-            return string.Empty;
+            var comma = function.FunctionArgs.Size > 0 ? ", " : string.Empty;
+            return $"{function.Name}({function.FunctionArgs.Concat()}{comma}{function.Block.Name}, {function.Grid.Name}, {function.Stream.Name});\n";
         }
 
         public string DefineKernel(KernelFunction func)
         {
+            //ToDo: multiply range to global range
             var retType = func.ReturnType.Type;
             var body = func.BodyBuilder.Build();
             var args = func.FunctionArgs.Concat();
@@ -64,7 +66,7 @@ namespace GemmForge.Gpu
                              "});";
 
             var comma = func.FunctionArgs.Size > 0 ? ", " : string.Empty;
-            var text = $"{retType} {func.Name}({args}{comma}range<3> {func.Block.Name}, range<3> {func.Grid.Name}, queue *{func.Stream.Name}){{\n{kernelBody}}}";
+            var text = $"{retType} {func.Name}({args}{comma}range<3> {func.Block.Name}, range<3> {func.Grid.Name}, queue *{func.Stream.Name}){{\n{kernelBody}}}\n";
             return text;
         }
     }

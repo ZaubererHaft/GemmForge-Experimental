@@ -171,7 +171,7 @@ namespace GemmForge
             var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
             var code = builder.DefineFunction(func).Build();
 
-            Assert.AreEqual("void func(){\n}", code.ToString());
+            Assert.AreEqual("void func(){\n}\n", code.ToString());
         }  
         
         [Test]
@@ -188,7 +188,7 @@ namespace GemmForge
             
             var code = builder.DefineFunction(func).Build();
 
-            Assert.AreEqual("float func(float A, float B){\nreturn A + B;\n}", code.ToString());
+            Assert.AreEqual("float func(float A, float B){\nreturn A + B;\n}\n", code.ToString());
         }
         
         [Test]
@@ -209,7 +209,7 @@ namespace GemmForge
             Assert.AreEqual("void func(range<3> block, range<3> grid, queue *stream){\n" +
                                     "stream->submit([&](handler &cgh){" +
                                     "cgh.parallel_for(nd_range<3>{block, grid}, [=](nd_item<3> item){\n" +
-                                    "});\n});}", code.ToString());
+                                    "});\n});}\n", code.ToString());
         }  
         
         [Test]
@@ -227,13 +227,41 @@ namespace GemmForge
             
             var code = builder.DefineGpuKernel(kernelFunc).Build();
 
-            Assert.AreEqual("__global__ __launch_bounds__(64) void func(){\n}", code.ToString());
+            Assert.AreEqual("__global__ __launch_bounds__(64) void func(){\n}\n", code.ToString());
         }
         
         [Test]
         public void TestLaunchSyclKernel()
         {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
             
+            var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
+            var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
+            var stream = new Stream("stream");
+
+            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
+            var kernelFunc = new KernelFunction(func, block, grid, stream);
+
+            var code = builder.LaunchGpuKernel(kernelFunc).Build();
+            Assert.AreEqual("func(block, grid, stream);\n", code.ToString());
         }
+        
+        [Test]
+        public void TestLaunchCudaKernel()
+        {
+            var builder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppCUDACodeBuilder();
+            
+            var block = new Range("block", new Literal("10"), new Literal("1"), new Literal("1"));
+            var grid = new Range("grid",  new Literal("3"), new Literal("1"), new Literal("1"));
+            var stream = new Stream("stream");
+
+            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
+            var kernelFunc = new KernelFunction(func, block, grid, stream);
+
+            var code = builder.LaunchGpuKernel(kernelFunc).Build();
+            Assert.AreEqual("func<<<grid, block, 0, stream>>>();\n", code.ToString());
+        } 
     }
 }

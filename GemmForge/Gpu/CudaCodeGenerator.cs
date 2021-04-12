@@ -55,19 +55,19 @@ namespace GemmForge.Gpu
             return $"cudaStream_t {stream.Name} = static_cast<cudaStream_t>({ptr.VariableName});\n";
         }
 
-        public string LaunchKernel(Range block, Range grid, Stream stream)
-        {
-            return string.Empty;
-        }
-
         public string DefineKernel(KernelFunction func)
         {
             var retType = func.ReturnType.Type;
             var body = func.BodyBuilder.Build();
             var args = func.FunctionArgs.Concat();
 
-            var text = $"__global__ __launch_bounds__(64) {retType} {func.Name}({args}){{\n{body}}}";
+            var text = $"__global__ __launch_bounds__(64) {retType} {func.Name}({args}){{\n{body}}}\n";
             return text;
+        }
+
+        public string LaunchKernel(KernelFunction function)
+        {
+            return $"{function.Name}<<<{function.Grid.Name}, {function.Block.Name}, 0, {function.Stream.Name}>>>({function.FunctionArgs.Concat()});\n";
         }
 
         private string LocalShareMemory(Malloc malloc)

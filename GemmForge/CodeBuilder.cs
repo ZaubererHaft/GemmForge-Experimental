@@ -81,15 +81,15 @@ namespace GemmForge
             var body = f.BodyBuilder.Build();
             var args = f.FunctionArgs.Concat();
 
-            var text = $"{retType} {f.Name}({args}){{\n{body}}}";
+            var text = $"{retType} {f.Name}({args}){{\n{body}}}\n";
             
             _code.Append(text);
             return this;
         }
 
-        public CodeBuilder LaunchGpuKernel(Range block, Range grid, Stream stream)
+        public CodeBuilder LaunchGpuKernel(KernelFunction function)
         {
-            var text = _gpuCodeGenerator.LaunchKernel(block, grid, stream);
+            var text = _gpuCodeGenerator.LaunchKernel(function);
             _code.Append(text);
             return this;
         }
