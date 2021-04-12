@@ -15,13 +15,13 @@ namespace GemmForge.Gpu
 
         public string Create(MallocShared assignment)
         {
-            assignment.VariableType.Resolve(_typeConverter);
+            assignment.Variable.VariableType.Resolve(_typeConverter);
             var typeString = _typeConverter.ExtractResult();
 
             assignment.Count.Resolve(_expressionResolver);
             var expString = _expressionResolver.ExtractResult();
             
-            return $"malloc_device<{typeString}>({expString})";
+            return $"{assignment.Variable.VariableName} = malloc_device<{typeString}>({expString})";
         }
 
         public string Create(SharedVariableType assignment)

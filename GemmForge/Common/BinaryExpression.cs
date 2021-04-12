@@ -1,6 +1,6 @@
 namespace GemmForge.Common
 {
-    public abstract class BinaryExpression : Expression
+    public abstract class BinaryExpression : TypedExpression
     {
         public BinaryExpression(Expression expressionA, Expression expressionB)
         {
@@ -10,7 +10,5 @@ namespace GemmForge.Common
 
         public Expression ExpressionA { get; }
         public Expression ExpressionB { get; }
-
-
     }
 }

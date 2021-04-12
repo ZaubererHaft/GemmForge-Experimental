@@ -14,7 +14,9 @@ namespace GemmForge.Gpu
         }
         public string Create(MallocShared exp)
         {
-            return $"cudaMallocManaged(&TEST, {exp.Count}, cudaMemAttachGlobal)";
+            exp.Count.Resolve(_expressionResolver);
+            var subex = _expressionResolver.ExtractResult();
+            return $"cudaMallocManaged(&{exp.Variable.VariableName}, {subex}, cudaMemAttachGlobal)";
         }
 
         public string Create(SharedVariableType variable)

@@ -2,12 +2,12 @@ namespace GemmForge.Common
 {
     public class Assignment : Expression
     {
-        public Assignment(Expression expression)
+        public Assignment(TypedExpression expression)
         {
             Expression = expression;
         }
 
-        public Expression Expression { get; }
+        public TypedExpression Expression { get; }
         
         public override void Resolve(IExpressionResolver resolver)
         {

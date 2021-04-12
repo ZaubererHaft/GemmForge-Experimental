@@ -66,7 +66,7 @@ namespace GemmForge
             return this;
         }
 
-        public CodeBuilder MallocMemory(Variable variable, Expression expr)
+        public CodeBuilder MallocMemory(Variable variable, MallocShared expr)
         {
             variable.VariableType.Resolve(_typeResolver);
             var typeString = _typeResolver.ExtractResult();

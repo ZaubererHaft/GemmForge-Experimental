@@ -1,6 +1,6 @@
 namespace GemmForge.Common
 {
-    public class Literal : Expression
+    public class Literal : TypedExpression
     {
         public string Value { get; }
 
