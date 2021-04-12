@@ -74,11 +74,31 @@ namespace GemmForge
             _code.Append(text);
             return this;
         }
+        
+        public CodeBuilder DefineFunction(Function f)
+        {
+            var retType = f.ReturnType.Type;
+            var body = f.BodyBuilder.Build();
+            var args = f.FunctionArgs.Concat();
+
+            var text = $"{retType} {f.Name}({args}){{\n{body}}}";
+            
+            _code.Append(text);
+            return this;
+        }
 
         public CodeBuilder LaunchGpuKernel(Range block, Range grid, Stream stream)
         {
             var text = _gpuCodeGenerator.LaunchKernel(block, grid, stream);
             _code.Append(text);
+            return this;
+        }
+
+        public CodeBuilder Return(Expression expression)
+        {
+            expression.Resolve(_expressionResolver);
+            var text = _expressionResolver.ExtractResult();
+            _code.AppendAndClose($"return {text}");
             return this;
         }
     }

@@ -51,6 +51,8 @@
         <Compile Include="Common\CppExpressionResolver.cs" />
         <Compile Include="Common\DoublePrecisionFloat.cs" />
         <Compile Include="Common\Expression.cs" />
+        <Compile Include="Common\Function.cs" />
+        <Compile Include="Common\FunctionArguments.cs" />
         <Compile Include="Common\IExpressionResolver.cs" />
         <Compile Include="Common\Literal.cs" />
         <Compile Include="Common\MallocHints.cs" />

@@ -162,6 +162,34 @@ namespace GemmForge
             Assert.AreEqual("cudaStream_t q = static_cast<cudaStream_t>(stream);\n", code.ToString());
         }
         
+        [Test]
+        public void TestDefineSimpleFunction()
+        {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+
+            var func = new Function("func", new VoidType(), new FunctionArguments(), methodBuilder);
+            var code = builder.DefineFunction(func).Build();
+
+            Assert.AreEqual("void func(){\n}", code.ToString());
+        }  
+        
+        [Test]
+        public void TestDefineComplexFunction()
+        {
+            var builder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+            var methodBuilder = new CodeBuilderFactory().CreateCppSyclCodeBuilder();
+
+            var varA = new Variable(new SinglePrecisionFloat(), "A");
+            var varB = new Variable(new SinglePrecisionFloat(), "B");
+
+            var func = new Function("func", new SinglePrecisionFloat(), new FunctionArguments(varA, varB), methodBuilder);
+            methodBuilder.Return(new Addition(varA, varB));
+            
+            var code = builder.DefineFunction(func).Build();
+
+            Assert.AreEqual("float func(float A, float B){\nreturn A + B;\n}", code.ToString());
+        }   
         
         [Test]
         public void TestLaunchSyclKernel()
